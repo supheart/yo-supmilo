@@ -1,0 +1,4 @@
+{
+  "ioredis": "^1.15.1",
+  "connect-redis": "^3.0.2"
+}
