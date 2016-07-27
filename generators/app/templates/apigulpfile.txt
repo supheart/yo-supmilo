@@ -1,0 +1,27 @@
+var gulp = require('gulp');
+var uglify = require('gulp-uglify');
+
+//压缩nodejs代码
+gulp.task('minnode', function () {
+  return gulp.src(['src/**/*.js', '!src/configs/**/*.js'])
+    .pipe(uglify())
+    .pipe(gulp.dest('dist'));
+});
+
+//移动配置文件
+gulp.task('moveconfigs', function () {
+  return gulp.src('src/configs/**/*')
+    .pipe(gulp.dest('dist/configs'));
+});
+
+gulp.task('default', ['moveconfigs', 'minnode']);
+
+//将文件移动到共享文件夹
+var dirName = 'f:/vymiddle';
+gulp.task('pack', function () {
+  gulp.src('./dist/**').pipe(gulp.dest(dirName + '/dist'));
+  gulp.src('./node_modules/**').pipe(gulp.dest(dirName + '/node_modules'));
+  gulp.src('./oauth/**').pipe(gulp.dest(dirName + '/oauth'));
+  gulp.src('./package.json').pipe(gulp.dest(dirName));
+  gulp.src('./launch.sh').pipe(gulp.dest(dirName));
+});

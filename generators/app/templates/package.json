@@ -1,0 +1,22 @@
+{
+  "name": "milo",
+  "version": "1.0.0",
+  "description": "a project by milo",
+  "main": "app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dist": "node dist/app.js"
+  },
+  "author": "milo",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "compression": "^1.6.2",
+    "express": "^4.13.4",
+    "log4js": "^0.6.36"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-uglify": "^1.5.3"
+  }
+}
