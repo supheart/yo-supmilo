@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>uploadFile</title>
+
+    <style type="text/css">
+        body{background-color: #eeeeee;}
+        .upload-file{
+            position: relative; width: 300px; height: 30px; margin: 20px auto; padding: 0; font-size: 0;
+        }
+        .upload-file input[type=text]{
+            margin: 0; padding: 0 5px; width: 189px; height: 28px; line-height: 28px;  
+            border: 1px solid #c2c2c2; border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-right: none; 
+            vertical-align: middle;
+            
+        }
+        .upload-file button{
+            margin: 0; padding: 0; width: 100px; height: 30px; 
+            border: 1px solid #c2c2c2; border-top-right-radius: 5px; border-bottom-right-radius: 5px; border-left: none;
+            vertical-align: middle;cursor: pointer;
+            
+        }
+        .upload-file input[type=file]{
+            position:absolute; padding:0; margin:0; width: 100px; height: 30px; top:0; right:0;
+            border:0; cursor:pointer;
+            filter:alpha(opacity=0);-moz-opacity:0;-khtml-opacity: 0;opacity:0;
+        }
+        #img-div{
+            margin: 10px auto; padding: 0; width: 500px; height: auto; display: none;
+        }
+        #img-div img{
+            width: 500px; height: auto;
+        }
+        #img-div input[type=submit]{
+            margin: 10px auto; padding: 0; display: block; width: 80px; height: 40px; border-radius: 5px; border: 1px solid #c2c2c2; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <form action="md5File" method="post" enctype="multipart/form-data">
+        <div class="upload-file">
+            <input id="upload" name="uploadFile" type="file">
+            <input id="upload-name" type="text" placeholder="请选择上传文件" readonly="readonly" />
+            <button>上传文件</button>
+        </div>
+        <div id="img-div">
+            <img src="#" alt="上传图片">
+            <input type="submit">
+        </div>
+    </form>
+    
+
+<script type="text/javascript">
+    window.onload = function(){
+        console.log('start page...');
+        var upload = document.getElementById("upload");
+        upload.onchange = function(){
+            // console.log("change upload file");
+            var imgDiv = document.getElementById("img-div");
+            var imgObj = imgDiv.getElementsByTagName("img")[0];
+            if(this.files.length > 0){
+                document.getElementById("upload-name").value = this.files[0].name;
+                var tempUrl = window.URL.createObjectURL(this.files[0]);
+                imgObj.src = tempUrl;
+                imgDiv.style.display = "block";
+            }else{
+                document.getElementById("upload-name").value = "";
+                imgObj.src = "#";
+                imgDiv.style.display = "none";
+            }
+        };
+    }
+</script>
+</body>
+</html>

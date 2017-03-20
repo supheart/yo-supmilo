@@ -3,6 +3,8 @@ var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
 
+oassign();
+
 module.exports = yeoman.Base.extend({
   prompting: function () {
     // Have Yeoman greet the user.
@@ -29,6 +31,14 @@ module.exports = yeoman.Base.extend({
       type: 'confirm',
       message: 'is set session to redis (default is not)',
       default: false
+    }, {
+      when: function (response) {
+          return !response.isapi;
+      },
+      name: 'isupload',
+      type: 'confirm',
+      message: 'is use upload file router (default is not)',
+      default: false
     }];
 
     return this.prompt(prompts).then(function (props) {
@@ -42,6 +52,11 @@ module.exports = yeoman.Base.extend({
     this.fs.copy(
       this.templatePath('oauth'),
       this.destinationPath('oauth')
+    );
+    // 复制启动js文件
+    this.fs.copy(
+      this.templatePath('www'),
+      this.destinationPath('www')
     );
 
     // 复制eslintrc
@@ -77,7 +92,8 @@ module.exports = yeoman.Base.extend({
         {
           pname: this.props.pname,
           isrsess: this.props.isrsess || false,
-          ismysql: this.props.ismysql
+          ismysql: this.props.ismysql || false,
+          isupload: this.props.isupload || false
         }
       );
     } else {
@@ -98,7 +114,8 @@ module.exports = yeoman.Base.extend({
         {
           pname: this.props.pname,
           isrsess: this.props.isrsess || false,
-          ismysql: this.props.ismysql,
+          ismysql: this.props.ismysql || false,
+          isupload: this.props.isupload || false,
           pagename: '<%= name %>'
         }
       );
@@ -115,6 +132,12 @@ module.exports = yeoman.Base.extend({
       var mysqldepen = this.fs.readJSON(this.templatePath('sqldepend.json'));
       Object.assign(pkg.dependencies, mysqldepen);
     }
+    
+    // 判断是否需要upload
+    if (this.props.isupload) {
+      var uploaddepend = this.fs.readJSON(this.templatePath('uploaddepend.json'));
+      Object.assign(pkg.dependencies, uploaddepend);
+    }
 
     // 创建package.json文件
     pkg.description = 'a project by ' + pkg.name;
@@ -126,3 +149,30 @@ module.exports = yeoman.Base.extend({
     // this.npmInstall();
   }
 });
+
+function oassign() {
+  if (typeof Object.assign != 'function') {
+    (function () {
+    Object.assign = function (target) {
+    'use strict';
+    if (target === undefined || target === null) {
+      throw new TypeError('Cannot convert undefined or null to object');
+    }
+    
+    var output = Object(target);
+    for (var index = 1; index < arguments.length; index++) {
+      var source = arguments[index];
+      if (source !== undefined && source !== null) {
+        for (var nextKey in source) {
+          if (source.hasOwnProperty(nextKey)) {
+            output[nextKey] = source[nextKey];
+          }
+        }
+      }
+    }
+    return output;
+    };
+  })();
+  }
+}
+

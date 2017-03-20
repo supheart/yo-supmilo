@@ -1,9 +1,19 @@
 var gulp = require('gulp');
+var eslint = require('gulp-eslint');
 var sass = require('gulp-sass');
 var uglify = require('gulp-uglify');
 var htmlmin = require('gulp-htmlmin');
 var cssmin = require('gulp-clean-css');
 var gulpSequence = require('gulp-sequence');//控制任务顺序
+
+//eslint校验
+gulp.task('lint', function () {
+  return gulp.src(['**/*.js','!node_modules/**', '!dist/**', '!src/public/**'])
+    //.pipe(excludeGitignore())//排除gitignore文件的内容
+    .pipe(eslint())
+    .pipe(eslint.format())//格式化代码
+    .pipe(eslint.failAfterError());
+});
 
 gulp.task('sass', function(){
     return gulp.src('./src/public/sass/*.scss')
@@ -75,8 +85,10 @@ gulp.task('default', gulpSequence('movefile', ['moveconfigs', 'minnode', 'minhtm
 var dirName = 'f:/vymiddle';
 gulp.task('pack', function () {
   gulp.src('./dist/**').pipe(gulp.dest(dirName + '/dist'));
-  gulp.src('./node_modules/**').pipe(gulp.dest(dirName + '/node_modules'));
+  // gulp.src('./node_modules/**').pipe(gulp.dest(dirName + '/node_modules'));
   gulp.src('./oauth/**').pipe(gulp.dest(dirName + '/oauth'));
+  gulp.src('./www/dist-cluster.js').pipe(gulp.dest(dirName + '/www'));
+  gulp.src('./www/dist.js').pipe(gulp.dest(dirName + '/www'));
   gulp.src('./package.json').pipe(gulp.dest(dirName));
   gulp.src('./launch.sh').pipe(gulp.dest(dirName));
 });

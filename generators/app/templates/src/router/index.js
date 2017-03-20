@@ -17,6 +17,19 @@ module.exports = function(router){
 		res.render('index', data);
 	});
 
+	<% if(isupload){ -%>
+	// 上传文件
+	router.get('/upload', function(req, res){
+		res.render('upload');
+	});
+
+	router.post('/upload', upload.single('uploadFile'), function(req, res){
+		var uploadFile = req.file;
+		console.log(uploadFile);
+		res.json(rp.getRes(0));
+	});
+	<% } -%>
+
 	//错误页
 	router.all('/error', function (req, res) {
 		res.status(403).json((rp.getRes(1)));

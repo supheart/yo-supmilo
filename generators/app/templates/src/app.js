@@ -9,8 +9,11 @@ var Redis = require('ioredis');
 var redisStore = require('connect-redis')(session);
 <% } -%>
 var log4js = require('log4js');
-var compression = require('compression')
+var compression = require('compression');
 var utool = require('./lib/utool');
+<% if(isupload){ -%>
+var multer  = require('multer');
+<% } -%>
 
 var projectId = '<%= pname %>';
 var app = express();
@@ -51,6 +54,25 @@ app.use(log4js.connectLogger(logger, {level: log4js.levels.INFO, format: logConf
 logger.info('start log..');
 //-----end--设置日志处理------
 
+<% if(isupload){ -%>
+//----start-设置上传文件内容-----
+var storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, './src/uploads/');
+	},
+	filename: function (req, file, cb) {
+		var pre = file.mimetype.split('/')[1] || '';
+		if(pre){
+			pre = '.' + pre;
+		}
+		cb(null, file.fieldname + '-' + Date.now() + pre);
+	}
+});
+global.upload = multer({ storage: storage });
+upload.fields([{ name: 'text', maxCount: 1 }, { name: 'uploadFile', maxCount: 1 }]);
+//-----end--设置上传文件内容-----
+<% } -%>
+
 //----start-设置路由和过滤器------
 var indexFilter = require('./core/filter/index');
 app.use(indexFilter.index);
@@ -69,24 +91,26 @@ global.knex.raw('set names utf8mb4').asCallback(function (err, data) {
 //-----end---设置数据库------
 <% } %>
 
-//----start-启动服务器------
-var port = utool.conf('host.port') || '443';
-var isHttps = utool.conf('host.isHttps');
-if(isHttps){
-	var https = require('https');
-	const credentials = {
-		key: fs.readFileSync(__dirname + '/../oauth/encrypted.key'),
-		cert: fs.readFileSync(__dirname + '/../oauth/sign.crt'),
-		passphrase: '123456'
-	};
+// //----start-启动服务器------
+// var port = utool.conf('host.port') || '443';
+// var isHttps = utool.conf('host.isHttps');
+// if(isHttps){
+// 	var https = require('https');
+// 	const credentials = {
+// 		key: fs.readFileSync(__dirname + '/../oauth/encrypted.key'),
+// 		cert: fs.readFileSync(__dirname + '/../oauth/sign.crt'),
+// 		passphrase: '123456'
+// 	};
 
-	var httpsServer = https.createServer(credentials, app);
-	httpsServer.listen(port, function(){
-		logger.info('start https server, listen port ' + port);
-	});
-}else{
-	app.listen(port, function(){
-		logger.info('start http server, listen port ' + port);
-	});
-}
-//-----end--启动服务器------
+// 	var httpsServer = https.createServer(credentials, app);
+// 	httpsServer.listen(port, function(){
+// 		logger.info('start https server, listen port ' + port);
+// 	});
+// }else{
+// 	app.listen(port, function(){
+// 		logger.info('start http server, listen port ' + port);
+// 	});
+// }
+// //-----end--启动服务器------
+
+module.exports = app;
